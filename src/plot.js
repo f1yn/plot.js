@@ -75,8 +75,7 @@ class plot {
 
         switch (typeof options.hammerize){
             case "function":
-                // attempt to pass the function as a constructor ToDo: add better verfication for Hammer
-                console.log('whoah')
+                // attempt to pass the function as a constructor ToDo: add better verification for Hammer
                 this.hammerize(options.hammerize);
                 break;
             case "boolean":
@@ -427,11 +426,7 @@ class plot {
      */
 
     hammerize(hammerFactory){
-        console.log(hammerFactory);
-
-
         if (typeof hammerFactory === "function") {
-
 
             // bind resize event handlers
             window.addEventListener('resize', this._resizeWindowEvent.bind(this));

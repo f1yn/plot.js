@@ -247,7 +247,7 @@ class plot {
 
         args = typeof args === "object" ? args : {};
 
-        var graph = this.canvas,
+        let graph = this.canvas,
             offsetX = this.offsetX,
             offsetY = this.offsetY,
             scaleX = this.scaleX,
@@ -259,7 +259,7 @@ class plot {
 
         if (viewX > width || min >= max) return; // out of bounds
 
-        var plot = graph.getContext('2d'),
+        let plot = graph.getContext('2d'),
             lastY = -expression(min) * scaleY - offsetY,
             dX;
 
@@ -281,7 +281,7 @@ class plot {
 
 
     _resizeWindowEvent(e){
-        var self = this;
+        let self = this;
         clearTimeout(window[self.resizeTimeoutID]);
         window[self.resizeTimeoutID] = setTimeout(function () {
             self.adjustSize().redraw();
@@ -325,7 +325,7 @@ class plot {
             return this;
         }
 
-        var i = fcns.length, fcn, fcnArgs;
+        let i = fcns.length, fcn, fcnArgs;
 
         while(i--){
             fcn = fcns[i];
@@ -393,7 +393,7 @@ class plot {
      * @returns {plot}
      */
     adjustSize(){
-        var container = this.canvas.parentNode;
+        let container = this.canvas.parentNode;
         this.canvas.width = container.clientWidth;
         this.canvas.height = container.clientHeight;
         return this;
@@ -407,7 +407,7 @@ class plot {
         // bind resize event handlers
         window.addEventListener('resize', this._resizeWindowEvent.bind(this));
 
-        var hammer = new Hammer(this.canvas);
+        let hammer = new Hammer(this.canvas);
 
         hammer.on('panstart', this._panStartEvent.bind(this));
         hammer.on('panmove', this._panMoveEvent.bind(this));

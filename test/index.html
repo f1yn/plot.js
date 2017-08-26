@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box}
+
+        html, body,
+        body > div{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="../dist/plot.js"></script>
+</head>
+<body>
+    <div id="graph"></div>
+    <script>
+        window.mainplot = new plot(document.getElementById('graph'), {hammerize: true});
+    </script>
+</body>
+</html>

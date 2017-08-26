@@ -9,7 +9,9 @@ class plot {
      * @param {String} [options.color = {}] - Object container used for setting colors
      * @param {String} [options.color.grid = "#ddd"] - string of the CSS color value used for rendering the grid
      * @param {String} [options.color.axis = "#800"] - string of the CSS color value used for rendering the axis
-     * @param {String} [options.color.axisLabel = "#444"] - string of the CSS color value used for rendering the axis labels
+     * @param {String} [options.color.axisLabel = "#444"] - string of the CSS color value used for rendering both X and Y axis labels
+     * @param {String} [options.color.axisLabelX = "#444"] - string of the CSS color value used for rendering the X axis labels
+     * @param {String} [options.color.axisLabelY = "#444"] - string of the CSS color value used for rendering the Y axis label
      * @param {String} [options.color.labelX = "#444"] - string of the CSS color value used for rendering X axis numbers
      * @param {String} [options.color.labelY = "#444"] - string of the CSS color value used for rendering Y axis numbers
      * @param {Boolean} [options.labels = true] - flag for rendering labels on the axis of the graph
@@ -33,11 +35,13 @@ class plot {
 
         // setup default color options (assumes it's an object)
         options.color = (typeof options.color === "object") ? options.color : {};
+        let axisLabel = (typeof options.color.axisLabel === "string") ? options.color.axisLabel : '';
 
-        this.color = {
+            this.color = {
             grid: (typeof options.color.grid === 'string') ? options.color.grid : '#ddd',
             axis: (typeof options.color.axis === 'string') ? options.color.axis : '#888',
-            axisLabel: (typeof options.color.axisLabel === 'string') ? options.color.axisLabel : '#444',
+            axisLabelX: (typeof options.color.axisLabelX === 'string') ? options.color.axisLabelX : axisLabel || '#444',
+            axisLabelY: (typeof options.color.axisLabelY === 'string') ? options.color.axisLabelY : axisLabel || '#444',
             labelX: (typeof options.color.labelX === 'string') ? options.color.labelX : '#444',
             labelY: (typeof options.color.labelY === 'string') ? options.color.labelY : '#444',
         };
@@ -169,7 +173,8 @@ class plot {
         plot.strokeStyle = this.color.axis;
         plot.lineWidth = 1;
         plot.font = "bold 18px Arial";
-        plot.fillStyle = this.color.axisLabel;
+
+        plot.fillStyle = this.color.axisLabelX;
 
         if (dX >= 0 && dX <= width) {
             plot.beginPath();
@@ -182,6 +187,8 @@ class plot {
 
             plot.stroke();
         }
+
+        plot.fillStyle = this.color.axisLabelY;
 
         if (dY >= 0 && dY <= height) {
 

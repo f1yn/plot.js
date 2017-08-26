@@ -19,6 +19,7 @@ var plot = function () {
      * @param {Boolean} [options.labels = true] - flag for rendering labels on the axis of the graph
      * @param {Boolean} [options.initRender = true] - flag for whether the function should render after created
      * @param {Function=} options.callback(this) - function to be called after creation
+     * @param {Function=|Boolean=} options.hammerize - constructor for Hammer (looks for global constructor `Hammer` if `true`)
      */
     function plot(container, options) {
         _classCallCheck(this, plot);
@@ -84,8 +85,7 @@ var plot = function () {
 
         switch (_typeof(options.hammerize)) {
             case "function":
-                // attempt to pass the function as a constructor ToDo: add better verfication for Hammer
-                console.log('whoah');
+                // attempt to pass the function as a constructor ToDo: add better verification for Hammer
                 this.hammerize(options.hammerize);
                 break;
             case "boolean":
@@ -486,8 +486,6 @@ var plot = function () {
     }, {
         key: 'hammerize',
         value: function hammerize(hammerFactory) {
-            console.log(hammerFactory);
-
             if (typeof hammerFactory === "function") {
 
                 // bind resize event handlers

@@ -18,7 +18,7 @@
 <body>
     <div id="graph"></div>
     <script>
-        window.mainplot = new plot(document.getElementById('graph'), {hammerize: true});
+        window.mainplot = new plot(document.getElementById('graph'), {hammerize: window.Hammer || Hammer});
     </script>
 </body>
 </html>

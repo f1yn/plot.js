@@ -66,9 +66,6 @@ var plot = function () {
         // setup the flag for whether the graph will auto render once created
         options.initRender = typeof options.initRender === "boolean" ? options.initRender : true;
 
-        // setup the hammerize flag for determining if Hammer is automatically bound to the function
-        options.hammerize = typeof options.hammerize === "boolean" ? options.hammerize : false;
-
         // make unique identifier using the prototype method
         var uid = this._UID();
 
@@ -83,10 +80,33 @@ var plot = function () {
         // bind the canvas element to the object and to the container as a child element
         container.appendChild(this.canvas = element);
 
+        console.log(_typeof(options.hammerize), options.hammerize);
+
+        switch (_typeof(options.hammerize)) {
+            case "function":
+                // attempt to pass the function as a constructor ToDo: add better verfication for Hammer
+                console.log('whoah');
+                this.hammerize(options.hammerize);
+                break;
+            case "boolean":
+                // if the statement is true
+                if (options.hammerize) {
+                    if (typeof window.Hammer === "function") {
+                        this.hammerize(window.Hammer);
+                    } else {
+                        console.warn('no global Hammer constructor is preset, ignoring');
+                    }
+                }
+                break;
+            case "undefined":
+                // do nothing
+                break;
+            default:
+                console.warn('unrecognized Hammer constructor is preset, ignoring');
+        }
+
         // initialize the graph if the flag is set
         if (options.initRender) {
-            // if hammerize is set to true (ToDo: switch to direct passing of Hammer as a reference)
-            options.hammerize && this.hammerize();
 
             this.adjustSize().goToOrigin().redraw();
         }
@@ -294,7 +314,7 @@ var plot = function () {
 
             var plot = graph.getContext('2d'),
                 lastY = -expression(min) * scaleY - offsetY,
-                dX;
+                dX = void 0;
 
             plot.strokeStyle = typeof args.color === "string" ? args.color : '#000000';
             plot.lineWidth = 1;
@@ -367,8 +387,8 @@ var plot = function () {
             }
 
             var i = fcns.length,
-                fcn,
-                fcnArgs;
+                fcn = void 0,
+                fcnArgs = void 0;
 
             while (i--) {
                 fcn = fcns[i];
@@ -459,20 +479,28 @@ var plot = function () {
 
         /**
          * Initializes a new Hammer instance to allow desktop/mobile moving
+         * @param {Function} - The Hammer constructor
          * @returns {plot}
          */
 
     }, {
         key: 'hammerize',
-        value: function hammerize() {
-            // bind resize event handlers
-            window.addEventListener('resize', this._resizeWindowEvent.bind(this));
+        value: function hammerize(hammerFactory) {
+            console.log(hammerFactory);
 
-            var hammer = new Hammer(this.canvas);
+            if (typeof hammerFactory === "function") {
 
-            hammer.on('panstart', this._panStartEvent.bind(this));
-            hammer.on('panmove', this._panMoveEvent.bind(this));
-            hammer.on('panend', this._panEndEvent.bind(this));
+                // bind resize event handlers
+                window.addEventListener('resize', this._resizeWindowEvent.bind(this));
+
+                var hammer = new hammerFactory(this.canvas);
+
+                hammer.on('panstart', this._panStartEvent.bind(this));
+                hammer.on('panmove', this._panMoveEvent.bind(this));
+                hammer.on('panend', this._panEndEvent.bind(this));
+            } else {
+                console.warn('invalid Hammer constructor passed as arg');
+            }
 
             return this;
         }

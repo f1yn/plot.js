@@ -5,7 +5,7 @@ This project is intended to be a major part of an upcoming application I am deve
 
 ## How to use
 A prebuilt `plot.js` file (that is compatible with older browsers) can be downloaded from the `build` directory of this
-repository or from [here]();
+repository or from [here](https://raw.githubusercontent.com/flynnham/plot.js/master/dist/plot.min.js);
 
 In order to use plot.js you must create a Plot object to manipulate the canvas element, as well as bind it's canvas to
 the surrounding container.

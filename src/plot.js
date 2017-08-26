@@ -6,8 +6,12 @@ class plot {
      * Creates a new instance of the plot object.
      * @param {HTMLElement} container - parent HTMLElement where the canvas will be inserted.
      * @param {Object=} options - options object needed to configure the plot instance
-     * @param {String} [options.gridColor = "#ddd"] - string of the CSS color value used for rendering the grid
-     * @param {String} [options.axisColor = "#800"] - string of the CSS color value used for rendering the axis
+     * @param {String} [options.color = {}] - Object container used for setting colors
+     * @param {String} [options.color.grid = "#ddd"] - string of the CSS color value used for rendering the grid
+     * @param {String} [options.color.axis = "#800"] - string of the CSS color value used for rendering the axis
+     * @param {String} [options.color.axisLabel = "#444"] - string of the CSS color value used for rendering the axis labels
+     * @param {String} [options.color.labelX = "#444"] - string of the CSS color value used for rendering X axis numbers
+     * @param {String} [options.color.labelY = "#444"] - string of the CSS color value used for rendering Y axis numbers
      * @param {Boolean} [options.labels = true] - flag for rendering labels on the axis of the graph
      * @param {Boolean} [options.initRender = true] - flag for whether the function should render after created
      * @param {Function=} options.callback(this) - function to be called after creation
@@ -28,9 +32,14 @@ class plot {
         this.functions = [];
 
         // setup default color options (assumes it's an object)
+        options.color = (typeof options.color === "object") ? options.color : {};
+
         this.color = {
-            grid: (typeof options.gridColor === 'string') ? options.gridColor : '#ddd',
-            axis: (typeof options.axisColor === 'string') ? options.axisColor : '#888'
+            grid: (typeof options.color.grid === 'string') ? options.color.grid : '#ddd',
+            axis: (typeof options.color.axis === 'string') ? options.color.axis : '#888',
+            axisLabel: (typeof options.color.axisLabel === 'string') ? options.color.axisLabel : '#444',
+            labelX: (typeof options.color.labelX === 'string') ? options.color.labelX : '#444',
+            labelY: (typeof options.color.labelY === 'string') ? options.color.labelY : '#444',
         };
 
         // setup rendering rate option/default
@@ -160,6 +169,7 @@ class plot {
         plot.strokeStyle = this.color.axis;
         plot.lineWidth = 1;
         plot.font = "bold 18px Arial";
+        plot.fillStyle = this.color.axisLabel;
 
         if (dX >= 0 && dX <= width) {
             plot.beginPath();
@@ -206,7 +216,6 @@ class plot {
 
         plot.font = "bold 10px Arial";
         plot.textBaseline = "middle";
-        plot.fontcolor = '#333';
 
         plot.beginPath();
 
@@ -246,15 +255,18 @@ class plot {
         plot.closePath();
         plot.stroke();
 
-        plot.fillStyle = '#444';
-
         i = xAxis.length;
 
         if (this.labels) {
+
+            plot.fillStyle = this.color.labelX;
+
             while (i--) {
                 k = xAxis[i][0];
                 plot.fillText(k, xAxis[i][1] - plot.measureText(k).width / 2, 10);
             }
+
+            plot.fillStyle = this.color.labelY;
 
             i = yAxis.length;
 

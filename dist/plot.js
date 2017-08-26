@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -14,8 +14,12 @@ var plot = function () {
      * Creates a new instance of the plot object.
      * @param {HTMLElement} container - parent HTMLElement where the canvas will be inserted.
      * @param {Object=} options - options object needed to configure the plot instance
-     * @param {String} [options.gridColor = "#ddd"] - string of the CSS color value used for rendering the grid
-     * @param {String} [options.axisColor = "#800"] - string of the CSS color value used for rendering the axis
+     * @param {String} [options.color = {}] - Object container used for setting colors
+     * @param {String} [options.color.grid = "#ddd"] - string of the CSS color value used for rendering the grid
+     * @param {String} [options.color.axis = "#800"] - string of the CSS color value used for rendering the axis
+     * @param {String} [options.color.axisLabel = "#444"] - string of the CSS color value used for rendering the axis labels
+     * @param {String} [options.color.labelX = "#444"] - string of the CSS color value used for rendering X axis numbers
+     * @param {String} [options.color.labelY = "#444"] - string of the CSS color value used for rendering Y axis numbers
      * @param {Boolean} [options.labels = true] - flag for rendering labels on the axis of the graph
      * @param {Boolean} [options.initRender = true] - flag for whether the function should render after created
      * @param {Function=} options.callback(this) - function to be called after creation
@@ -27,7 +31,7 @@ var plot = function () {
         var element = document.createElement('canvas'); // setup canvas element to be inserted into the parent container
 
         // make dummy object if user does not pass an object as the second parameter
-        options = (typeof options === 'undefined' ? 'undefined' : _typeof(options)) === "object" ? options : {};
+        options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
 
         // setup container Array for functions
         // empty array where rendered functions are stored (as either functions or objects with restrictions)
@@ -38,9 +42,14 @@ var plot = function () {
         this.functions = [];
 
         // setup default color options (assumes it's an object)
+        options.color = _typeof(options.color) === "object" ? options.color : {};
+
         this.color = {
-            grid: typeof options.gridColor === 'string' ? options.gridColor : '#ddd',
-            axis: typeof options.axisColor === 'string' ? options.axisColor : '#888'
+            grid: typeof options.color.grid === 'string' ? options.color.grid : '#ddd',
+            axis: typeof options.color.axis === 'string' ? options.color.axis : '#888',
+            axisLabel: typeof options.color.axisLabel === 'string' ? options.color.axisLabel : '#444',
+            labelX: typeof options.color.labelX === 'string' ? options.color.labelX : '#444',
+            labelY: typeof options.color.labelY === 'string' ? options.color.labelY : '#444'
         };
 
         // setup rendering rate option/default
@@ -120,7 +129,7 @@ var plot = function () {
 
 
     _createClass(plot, [{
-        key: '_UID',
+        key: "_UID",
         value: function _UID() {
             var r = function r() {
                 return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
@@ -137,29 +146,29 @@ var plot = function () {
          */
 
     }, {
-        key: '_roundBaseX',
+        key: "_roundBaseX",
         value: function _roundBaseX(num, x) {
             return Math.pow(x, Math.floor(this._getBaseLog(x, num)));
         }
     }, {
-        key: '_getBaseLog',
+        key: "_getBaseLog",
         value: function _getBaseLog(x, y) {
             return Math.log(y) / Math.log(x);
         }
     }, {
-        key: '_strip',
+        key: "_strip",
         value: function _strip(number) {
             return parseFloat(number.toPrecision(4));
         }
     }, {
-        key: '_stripFixed',
+        key: "_stripFixed",
         value: function _stripFixed(number) {
             return parseFloat(number.toFixed(6));
         }
     }, {
-        key: '_isArray',
+        key: "_isArray",
         value: function _isArray(object) {
-            return (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === "object" && typeof object.length === "number";
+            return (typeof object === "undefined" ? "undefined" : _typeof(object)) === "object" && typeof object.length === "number";
         }
         /**
          * Pseudo-hidden drawing methods
@@ -168,12 +177,12 @@ var plot = function () {
          */
 
     }, {
-        key: '_clearCanvas',
+        key: "_clearCanvas",
         value: function _clearCanvas(canvas) {
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         }
     }, {
-        key: '_drawIntercepts',
+        key: "_drawIntercepts",
         value: function _drawIntercepts() {
             var graph = this.canvas,
                 width = graph.width,
@@ -185,6 +194,7 @@ var plot = function () {
             plot.strokeStyle = this.color.axis;
             plot.lineWidth = 1;
             plot.font = "bold 18px Arial";
+            plot.fillStyle = this.color.axisLabel;
 
             if (dX >= 0 && dX <= width) {
                 plot.beginPath();
@@ -212,7 +222,7 @@ var plot = function () {
             }
         }
     }, {
-        key: '_drawGrid',
+        key: "_drawGrid",
         value: function _drawGrid() {
             var graph = this.canvas,
                 scaleX = this.scaleX,
@@ -238,7 +248,6 @@ var plot = function () {
 
             plot.font = "bold 10px Arial";
             plot.textBaseline = "middle";
-            plot.fontcolor = '#333';
 
             plot.beginPath();
 
@@ -275,15 +284,18 @@ var plot = function () {
             plot.closePath();
             plot.stroke();
 
-            plot.fillStyle = '#444';
-
             i = xAxis.length;
 
             if (this.labels) {
+
+                plot.fillStyle = this.color.labelX;
+
                 while (i--) {
                     k = xAxis[i][0];
                     plot.fillText(k, xAxis[i][1] - plot.measureText(k).width / 2, 10);
                 }
+
+                plot.fillStyle = this.color.labelY;
 
                 i = yAxis.length;
 
@@ -293,11 +305,11 @@ var plot = function () {
             }
         }
     }, {
-        key: '_drawFunction',
+        key: "_drawFunction",
         value: function _drawFunction(expression, args) {
             if (typeof expression !== "function") return; // give up rendering if the object isn't a function
 
-            args = (typeof args === 'undefined' ? 'undefined' : _typeof(args)) === "object" ? args : {};
+            args = (typeof args === "undefined" ? "undefined" : _typeof(args)) === "object" ? args : {};
 
             var graph = this.canvas,
                 offsetX = this.offsetX,
@@ -332,7 +344,7 @@ var plot = function () {
             plot.stroke();
         }
     }, {
-        key: '_resizeWindowEvent',
+        key: "_resizeWindowEvent",
         value: function _resizeWindowEvent(e) {
             var self = this;
             clearTimeout(window[self.resizeTimeoutID]);
@@ -344,7 +356,7 @@ var plot = function () {
         // event handlers for panning events
 
     }, {
-        key: '_panStartEvent',
+        key: "_panStartEvent",
         value: function _panStartEvent(e) {
             // cache current offsets before changes occur
             this.panX = this.offsetX;
@@ -352,7 +364,7 @@ var plot = function () {
             this.canvas.parentNode.style.cursor = 'grabbing'; // set cursor on desktops
         }
     }, {
-        key: '_panMoveEvent',
+        key: "_panMoveEvent",
         value: function _panMoveEvent(e) {
             this.offsetX = this.panX - e.deltaX;
             this.offsetY = this.panY - e.deltaY;
@@ -360,7 +372,7 @@ var plot = function () {
             this.redraw(true);
         }
     }, {
-        key: '_panEndEvent',
+        key: "_panEndEvent",
         value: function _panEndEvent(e) {
             // clearTimeout(window[this.panTimeoutID]);
             this.panX = this.panY = 0;
@@ -376,7 +388,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'drawFunctions',
+        key: "drawFunctions",
         value: function drawFunctions(customFunctions) {
             // allows user to override stored functions and pass a dynamic array to be rendered
             var fcns = this._isArray(customFunctions) && customFunctions.length > 0 ? customFunctions : this.functions;
@@ -393,7 +405,7 @@ var plot = function () {
             while (i--) {
                 fcn = fcns[i];
                 fcnArgs = { width: this.canvas.width }; // cache width
-                switch (typeof fcn === 'undefined' ? 'undefined' : _typeof(fcn)) {
+                switch (typeof fcn === "undefined" ? "undefined" : _typeof(fcn)) {
                     case "function":
                         // draw the function without any fancy style (yet)
                         this._drawFunction(fcn, fcnArgs);
@@ -417,7 +429,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'setPosition',
+        key: "setPosition",
         value: function setPosition(X, Y) {
             this.offsetX = typeof X === "number" ? X : this.offsetX;
             this.offsetY = typeof Y === "number" ? Y : this.offsetY;
@@ -431,7 +443,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'setPositionX',
+        key: "setPositionX",
         value: function setPositionX(X) {
             this.offsetX = typeof X === "number" ? X : this.offsetX;
             return this;
@@ -444,7 +456,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'setPositionY',
+        key: "setPositionY",
         value: function setPositionY(Y) {
             this.offsetY = typeof Y === "number" ? Y : this.offsetY;
             return this;
@@ -456,7 +468,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'goToOrigin',
+        key: "goToOrigin",
         value: function goToOrigin() {
             this.offsetX = ~~(-this.canvas.width / 2);
             this.offsetY = ~~(-this.canvas.height / 2);
@@ -469,7 +481,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'adjustSize',
+        key: "adjustSize",
         value: function adjustSize() {
             var container = this.canvas.parentNode;
             this.canvas.width = container.clientWidth;
@@ -484,7 +496,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'hammerize',
+        key: "hammerize",
         value: function hammerize(hammerFactory) {
             if (typeof hammerFactory === "function") {
 
@@ -510,7 +522,7 @@ var plot = function () {
          */
 
     }, {
-        key: 'redraw',
+        key: "redraw",
         value: function redraw(clear) {
             clear && this._clearCanvas(this.canvas); // clear when set to `true`
             this.renderFunctions && this.drawFunctions();

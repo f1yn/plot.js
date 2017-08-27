@@ -67,6 +67,10 @@ class plot {
         this.panX = (typeof options.panX === "number") ? options.panX : 0;
         this.panY = (typeof options.panY === "number") ? options.panY : 0;
 
+        // setup custom font-size
+        this.labelSize = (typeof options.labelSize === "number") ? options.labelSize : 10;
+        this.axisLabelSize = (typeof options.axisLabelSize === "number") ? options.axisLabelSize : 18;
+
         // setup the flag for whether the graph will auto render once created
         options.initRender = (typeof options.initRender === "boolean") ? options.initRender : true;
 
@@ -172,7 +176,8 @@ class plot {
 
         plot.strokeStyle = this.color.axis;
         plot.lineWidth = 1;
-        plot.font = "bold 18px Arial";
+
+        plot.font = `bold ${ this.axisLabelSize }px Arial`;
 
         plot.fillStyle = this.color.axisLabelX;
 
@@ -216,12 +221,12 @@ class plot {
             intervalY = (64 / this._roundBaseX(scaleY, 2)).toPrecision(8),
             plot = graph.getContext('2d'),
             stripFixed = this._stripFixed,
-            xAxis = [], yAxis = [], start = 0, i, dX, dY, k;
+            xAxis = [], yAxis = [], start = 0, i, dX, dY, k, hv;
 
         plot.strokeStyle = this.color.grid;
         plot.lineWidth = 1;
 
-        plot.font = "bold 10px Arial";
+        plot.font = `bold ${ this.labelSize }px Arial`;
         plot.textBaseline = "middle";
 
         plot.beginPath();
@@ -268,15 +273,16 @@ class plot {
 
             plot.fillStyle = this.color.labelX;
 
+            hv = this.labelSize / 2; // vertical spacer
+
             while (i--) {
                 k = xAxis[i][0];
-                plot.fillText(k, xAxis[i][1] - plot.measureText(k).width / 2, 10);
+                plot.fillText(k, xAxis[i][1] - plot.measureText(k).width / 2, 6 + hv);
             }
 
             plot.fillStyle = this.color.labelY;
 
             i = yAxis.length;
-
             while (i--) plot.fillText(yAxis[i][0] + '', 4, yAxis[i][1]);
         }
     }

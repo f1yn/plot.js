@@ -489,6 +489,159 @@ var plot = function () {
             return this;
         }
 
+        // gets canvas position from scaled X coordinate
+
+    }, {
+        key: "getScalePositionX",
+        value: function getScalePositionX(X) {
+            return -(this.canvas.width / 2) + X * this.scaleX;
+        }
+
+        // gets canvas position from scaled Y coordinate
+
+    }, {
+        key: "getScalePositionY",
+        value: function getScalePositionY(Y) {
+            return -(this.canvas.height / 2) + Y * this.scaleY;
+        }
+
+        // reverse to find real x
+        /*
+        * offsetX = -(A / 2) + graphX * S;
+        *
+        * offsetX + (A / 2) = graphX * S;
+        *
+        * (offsetX + (A / 2)) / S = graphX
+        *
+        * */
+
+    }, {
+        key: "getCanvasX",
+        value: function getCanvasX(cX) {
+            return (cX + this.canvas.width / 2) / this.scaleX;
+        }
+
+        /**
+         * Animates either X or Y (or both) by specific amounts
+         * @param deltas {Object=} - Object containing deltas to be animated
+         * @param deltas.x {Number=0} - The change in X from current position
+         * @param deltas.y {Number=0} - The change in Y from current position
+         * @param callback
+         */
+
+    }, {
+        key: "animate",
+        value: function animate(deltas, callback) {
+            // step 1: get the current Canvas position of the middle of the viewport
+            // step 2: get the future position of the middle of the viewport for new X value
+            // s3: calculate the delta between them and set that as the end position
+            // s4: animate it until it gets there
+
+            deltas = (typeof deltas === "undefined" ? "undefined" : _typeof(deltas)) === "object" ? deltas : {};
+            deltas.x = typeof deltas.x === "number" ? deltas.x : 0;
+            deltas.y = typeof deltas.y === "number" ? deltas.y : 0;
+
+            callback = typeof callback === "function" ? callback : function () {}; // dummy callback function
+
+            var self = this,
+                startCanvasX = self.offsetX,
+                startCanvasY = self.offsetY,
+                targetCanvasX = startCanvasX + deltas.x * self.scaleX,
+                targetCanvasY = startCanvasY + deltas.y * self.scaleY,
+                dX = targetCanvasX - startCanvasX,
+                dY = startCanvasY - targetCanvasY,
+                duration = 1750;
+
+            var easeInOutCubic = function easeInOutCubic(t, b, c, d) {
+                if ((t /= d / 2) < 1) return c / 2 * t * t * t + b;
+                return c / 2 * ((t -= 2) * t * t + 2) + b;
+            };
+
+            console.log(startCanvasX, targetCanvasX);
+
+            var startTime = null,
+                _animateFrame3 = function animateFrame() {}; // dummy function to prevent errors
+
+            // optimize animation depending on whether or not deltas are set;
+
+            if (deltas.x && deltas.y) {
+                // both delta are set animate both
+                _animateFrame3 = function animateFrame(timestamp) {
+                    startTime = startTime || timestamp;
+                    var elapsed = timestamp - startTime;
+                    self.setPositionX(easeInOutCubic(elapsed, startCanvasX, dX, duration)).setPositionY(easeInOutCubic(elapsed, startCanvasY, dY, duration)).redraw(true);
+
+                    elapsed < duration ? requestAnimationFrame(_animateFrame3) : callback();
+                };
+            } else if (deltas.x) {
+                // only change in x is present
+                _animateFrame3 = function _animateFrame(timestamp) {
+                    startTime = startTime || timestamp;
+                    var elapsed = timestamp - startTime;
+                    self.setPositionX(easeInOutCubic(elapsed, startCanvasX, dX, duration)).redraw(true);
+
+                    elapsed < duration ? requestAnimationFrame(_animateFrame3) : callback();
+                };
+            } else if (deltas.y) {
+                // only change in y is present
+                _animateFrame3 = function _animateFrame2(timestamp) {
+                    startTime = startTime || timestamp;
+                    var elapsed = timestamp - startTime;
+                    self.setPositionY(easeInOutCubic(elapsed, startCanvasY, dY, duration)).redraw(true);
+
+                    elapsed < duration ? requestAnimationFrame(_animateFrame3) : callback();
+                };
+            }
+
+            requestAnimationFrame(_animateFrame3);
+            return this;
+        }
+
+        /**
+         * Animates either X or Y (or both) to a specific coordinate on the graph
+         * @param coord {Object=} - Object containing deltas to be animated
+         * @param coord.x {Number=0} - The position in X to animate
+         * @param coord.y {Number=0} - The position in Y to animate
+         * @param callback
+         */
+
+    }, {
+        key: "animateToCoordinate",
+        value: function animateToCoordinate(coord, callback) {
+            coord = (typeof coord === "undefined" ? "undefined" : _typeof(coord)) === "object" ? coord : {};
+
+            var dX = void 0,
+                dY = void 0,
+                doAnimation = false;
+
+            if (typeof coord.x === "number") {
+                var currentX = (this.offsetX + this.canvas.width / 2) * this.scaleX;
+                dX = coord.x - currentX;
+                doAnimation = true;
+            }
+
+            if (typeof coord.y === "number") {
+                var currentY = (this.offsetY + this.canvas.height / 2) * this.scaleY;
+                dY = currentY + coord.y;
+                doAnimation = true;
+            }
+
+            doAnimation && this.animate({ x: dX, y: dY }, callback);
+
+            return this;
+        }
+
+        /**
+         * Animates to origin
+         */
+
+    }, {
+        key: "animateToOrigin",
+        value: function animateToOrigin() {
+            this.animateToCoordinate({ x: 0, y: 0 });
+            return this;
+        }
+
         /**
          * Adjusts the dimensions of the canvas to match (fill) it's parent container
          * @returns {plot}

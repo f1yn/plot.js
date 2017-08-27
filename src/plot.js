@@ -433,6 +433,146 @@ class plot {
         return this;
     }
 
+    // gets canvas position from scaled X coordinate
+    getScalePositionX(X){
+        return  -(this.canvas.width / 2) + X * this.scaleX;
+    }
+
+    // gets canvas position from scaled Y coordinate
+    getScalePositionY(Y){
+        return  -(this.canvas.height / 2) + Y * this.scaleY;
+    }
+
+
+    // reverse to find real x
+    /*
+    * offsetX = -(A / 2) + graphX * S;
+    *
+    * offsetX + (A / 2) = graphX * S;
+    *
+    * (offsetX + (A / 2)) / S = graphX
+    *
+    * */
+
+    getCanvasX(cX){
+        return (cX + (this.canvas.width / 2)) / this.scaleX;
+    }
+
+    /**
+     * Animates either X or Y (or both) by specific amounts
+     * @param deltas {Object=} - Object containing deltas to be animated
+     * @param deltas.x {Number=} - The change in X from current position
+     * @param deltas.y {Number=} - The change in Y from current position
+     * @param callback
+     */
+    animate(deltas, callback){
+        // step 1: get the current Canvas position of the middle of the viewport
+        // step 2: get the future position of the middle of the viewport for new X value
+        // s3: calculate the delta between them and set that as the end position
+        // s4: animate it until it gets there
+
+        deltas = typeof deltas === "object" ? deltas : {};
+        deltas.x = typeof deltas.x === "number" ? deltas.x : 0;
+        deltas.y = typeof deltas.y === "number" ? deltas.y : 0;
+
+        callback = typeof callback === "function" ? callback : () => {}; // dummy callback function
+
+        const self = this,
+            startCanvasX = self.offsetX,
+            startCanvasY = self.offsetY,
+            targetCanvasX = startCanvasX + deltas.x * self.scaleX,
+            targetCanvasY = startCanvasY + deltas.y * self.scaleY,
+            dX = targetCanvasX - startCanvasX,
+            dY = startCanvasY - targetCanvasY,
+            duration = 1750;
+
+        const easeInOutCubic = function (t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t * t + b;
+            return c / 2 * ((t -= 2) * t * t + 2) + b;
+        };
+
+        console.log(startCanvasX, targetCanvasX);
+
+        let startTime = null,
+            animateFrame = () => {}; // dummy function to prevent errors
+
+        // optimize animation depending on whether or not deltas are set;
+
+        if (deltas.x && deltas.y){
+            // both delta are set animate both
+            animateFrame = timestamp => {
+                startTime = startTime || timestamp;
+                let elapsed = (timestamp - startTime);
+                self
+                    .setPositionX(easeInOutCubic(elapsed, startCanvasX, dX, duration))
+                    .setPositionY(easeInOutCubic(elapsed, startCanvasY, dY, duration))
+                    .redraw(true);
+
+                (elapsed < duration) ? requestAnimationFrame(animateFrame) : callback();
+            }
+        } else if (deltas.x){
+            // only change in x is present
+            animateFrame = timestamp => {
+                startTime = startTime || timestamp;
+                let elapsed = (timestamp - startTime);
+                self.setPositionX(easeInOutCubic(elapsed, startCanvasX, dX, duration))
+                    .redraw(true);
+
+                (elapsed < duration) ? requestAnimationFrame(animateFrame) : callback();
+            }
+        } else if (deltas.y){
+            // only change in y is present
+            animateFrame = timestamp => {
+                startTime = startTime || timestamp;
+                let elapsed = (timestamp - startTime);
+                self.setPositionY(easeInOutCubic(elapsed, startCanvasY, dY, duration))
+                    .redraw(true);
+
+                (elapsed < duration) ? requestAnimationFrame(animateFrame) : callback();
+            }
+        }
+
+        requestAnimationFrame(animateFrame);
+        return this;
+    }
+
+    /**
+     * Animates either X or Y (or both) to a specific coordinate on the graph
+     * @param coord {Object=} - Object containing deltas to be animated
+     * @param coord.x {Number=} - The position in X to animate
+     * @param coord.y {Number=} - The position in Y to animate
+     * @param callback
+     */
+    animateToCoordinate(coord, callback){
+        coord = typeof coord === "object" ? coord : {};
+
+        let dX, dY, doAnimation = false;
+
+        if (typeof coord.x === "number"){
+            let currentX = (this.offsetX + (this.canvas.width / 2)) * this.scaleX;
+            dX = coord.x - currentX;
+            doAnimation = true;
+        }
+
+        if (typeof coord.y === "number"){
+            let currentY = (this.offsetY + (this.canvas.height / 2)) * this.scaleY;
+            dY = currentY + coord.y;
+            doAnimation = true;
+        }
+
+        doAnimation && this.animate({x: dX, y: dY}, callback);
+
+        return this;
+    }
+
+    /**
+     * Animates to origin
+     */
+    animateToOrigin(){
+        this.animateToCoordinate({x: 0, y: 0});
+        return this;
+    }
+
     /**
      * Adjusts the dimensions of the canvas to match (fill) it's parent container
      * @returns {plot}

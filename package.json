@@ -21,6 +21,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
     "jsdoc": "^3.5.3",
     "pump": "^1.0.2",
     "rimraf": "^2.6.1"

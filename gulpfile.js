@@ -9,6 +9,7 @@ let babel = require('gulp-babel');
 let gutil = require('gulp-util');
 let pump = require('pump');
 let jsdoc = require('gulp-jsdoc3');
+let watch = require('gulp-watch');
 
 const buildDir = './dist';
 
@@ -26,4 +27,10 @@ gulp.task('build', () => {
 gulp.task('doc', () =>{
     gulp.src(['README.md', './src'], {read: false})
         .pipe(jsdoc());
+});
+
+gulp.task('watch', () => {
+    return watch('./src/*', {readDelay: 350}, () => {
+        gulp.start('build');
+    });
 });

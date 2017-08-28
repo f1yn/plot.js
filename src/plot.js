@@ -463,9 +463,10 @@ class plot {
      * @param deltas {Object=} - Object containing deltas to be animated
      * @param deltas.x {Number=} - The change in X from current position
      * @param deltas.y {Number=} - The change in Y from current position
-     * @param callback
+     * @param callback - the code executed after animation completes
+     * @param duration - the duration of the animation in milliseconds
      */
-    animate(deltas, callback){
+    animate(deltas, callback, duration){
         // step 1: get the current Canvas position of the middle of the viewport
         // step 2: get the future position of the middle of the viewport for new X value
         // s3: calculate the delta between them and set that as the end position
@@ -473,18 +474,22 @@ class plot {
 
         deltas = typeof deltas === "object" ? deltas : {};
         deltas.x = typeof deltas.x === "number" ? deltas.x : 0;
+        deltas.X = typeof deltas.X === "number" ? deltas.X : 0;
+
         deltas.y = typeof deltas.y === "number" ? deltas.y : 0;
+        deltas.Y = typeof deltas.Y === "number" ? deltas.X : 0;
 
         callback = typeof callback === "function" ? callback : () => {}; // dummy callback function
 
         const self = this,
             startCanvasX = self.offsetX,
             startCanvasY = self.offsetY,
-            targetCanvasX = startCanvasX + deltas.x * self.scaleX,
-            targetCanvasY = startCanvasY + deltas.y * self.scaleY,
+            targetCanvasX = startCanvasX + (deltas.x || delta.X) * self.scaleX,
+            targetCanvasY = startCanvasY + (deltas.y || delta.Y) * self.scaleY,
             dX = targetCanvasX - startCanvasX,
-            dY = startCanvasY - targetCanvasY,
-            duration = 1750;
+            dY = startCanvasY - targetCanvasY;
+
+        duration = typeof duration === "number" ? duration : 1750;
 
         const easeInOutCubic = function (t, b, c, d) {
             if ((t /= d / 2) < 1) return c / 2 * t * t * t + b;
@@ -541,9 +546,10 @@ class plot {
      * @param coord {Object=} - Object containing deltas to be animated
      * @param coord.x {Number=} - The position in X to animate
      * @param coord.y {Number=} - The position in Y to animate
-     * @param callback
+     * @param callback - the code executed after animation completes
+     * @param duration - the duration of the animation in milliseconds
      */
-    animateToCoordinate(coord, callback){
+    animateToCoordinate(coord, callback, durration){
         coord = typeof coord === "object" ? coord : {};
 
         let dX, dY, doAnimation = false;
@@ -560,7 +566,7 @@ class plot {
             doAnimation = true;
         }
 
-        doAnimation && this.animate({x: dX, y: dY}, callback);
+        doAnimation && this.animate({x: dX, y: dY}, callback, duration);
 
         return this;
     }

@@ -549,7 +549,7 @@ class plot {
      * @param callback - the code executed after animation completes
      * @param duration - the duration of the animation in milliseconds
      */
-    animateToCoordinate(coord, callback, durration){
+    animateToCoordinate(coord, callback, duration){
         coord = typeof coord === "object" ? coord : {};
 
         let dX, dY, doAnimation = false;
@@ -574,8 +574,8 @@ class plot {
     /**
      * Animates to origin
      */
-    animateToOrigin(){
-        this.animateToCoordinate({x: 0, y: 0});
+    animateToOrigin(callback, duration){
+        this.animateToCoordinate({x: 0, y: 0}, callback, duration);
         return this;
     }
 

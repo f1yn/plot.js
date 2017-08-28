@@ -573,6 +573,8 @@ class plot {
 
     /**
      * Animates to origin
+     * @param callback - the code executed after animation completes
+     * @param duration - the duration of the animation in milliseconds
      */
     animateToOrigin(callback, duration){
         this.animateToCoordinate({x: 0, y: 0}, callback, duration);

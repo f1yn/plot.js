@@ -613,7 +613,7 @@ var plot = function () {
 
     }, {
         key: "animateToCoordinate",
-        value: function animateToCoordinate(coord, callback, durration) {
+        value: function animateToCoordinate(coord, callback, duration) {
             coord = (typeof coord === "undefined" ? "undefined" : _typeof(coord)) === "object" ? coord : {};
 
             var dX = void 0,
@@ -639,12 +639,14 @@ var plot = function () {
 
         /**
          * Animates to origin
+         * @param callback - the code executed after animation completes
+         * @param duration - the duration of the animation in milliseconds
          */
 
     }, {
         key: "animateToOrigin",
-        value: function animateToOrigin() {
-            this.animateToCoordinate({ x: 0, y: 0 });
+        value: function animateToOrigin(callback, duration) {
+            this.animateToCoordinate({ x: 0, y: 0 }, callback, duration);
             return this;
         }
 

@@ -179,7 +179,7 @@ class plot {
 
         plot.font = `bold ${ this.axisLabelSize }px Arial`;
 
-        plot.fillStyle = this.color.axisLabelX;
+        plot.fillStyle = this.color.axisLabelY;
 
         if (dX >= 0 && dX <= width) {
             plot.beginPath();
@@ -193,7 +193,7 @@ class plot {
             plot.stroke();
         }
 
-        plot.fillStyle = this.color.axisLabelY;
+        plot.fillStyle = this.color.axisLabelX;
 
         if (dY >= 0 && dY <= height) {
 

@@ -204,7 +204,7 @@ var plot = function () {
 
             plot.font = "bold " + this.axisLabelSize + "px Arial";
 
-            plot.fillStyle = this.color.axisLabelX;
+            plot.fillStyle = this.color.axisLabelY;
 
             if (dX >= 0 && dX <= width) {
                 plot.beginPath();
@@ -218,7 +218,7 @@ var plot = function () {
                 plot.stroke();
             }
 
-            plot.fillStyle = this.color.axisLabelY;
+            plot.fillStyle = this.color.axisLabelX;
 
             if (dY >= 0 && dY <= height) {
 
@@ -524,8 +524,8 @@ var plot = function () {
         /**
          * Animates either X or Y (or both) by specific amounts
          * @param deltas {Object=} - Object containing deltas to be animated
-         * @param deltas.x {Number=0} - The change in X from current position
-         * @param deltas.y {Number=0} - The change in Y from current position
+         * @param deltas.x {Number=} - The change in X from current position
+         * @param deltas.y {Number=} - The change in Y from current position
          * @param callback
          */
 
@@ -600,8 +600,8 @@ var plot = function () {
         /**
          * Animates either X or Y (or both) to a specific coordinate on the graph
          * @param coord {Object=} - Object containing deltas to be animated
-         * @param coord.x {Number=0} - The position in X to animate
-         * @param coord.y {Number=0} - The position in Y to animate
+         * @param coord.x {Number=} - The position in X to animate
+         * @param coord.y {Number=} - The position in Y to animate
          * @param callback
          */
 

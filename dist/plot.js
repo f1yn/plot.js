@@ -540,18 +540,15 @@ var plot = function () {
 
             deltas = (typeof deltas === "undefined" ? "undefined" : _typeof(deltas)) === "object" ? deltas : {};
             deltas.x = typeof deltas.x === "number" ? deltas.x : 0;
-            deltas.X = typeof deltas.X === "number" ? deltas.X : 0;
-
             deltas.y = typeof deltas.y === "number" ? deltas.y : 0;
-            deltas.Y = typeof deltas.Y === "number" ? deltas.X : 0;
 
             callback = typeof callback === "function" ? callback : function () {}; // dummy callback function
 
             var self = this,
                 startCanvasX = self.offsetX,
                 startCanvasY = self.offsetY,
-                targetCanvasX = startCanvasX + (deltas.x || delta.X) * self.scaleX,
-                targetCanvasY = startCanvasY + (deltas.y || delta.Y) * self.scaleY,
+                targetCanvasX = startCanvasX + deltas.x * self.scaleX,
+                targetCanvasY = startCanvasY + deltas.y * self.scaleY,
                 dX = targetCanvasX - startCanvasX,
                 dY = startCanvasY - targetCanvasY;
 

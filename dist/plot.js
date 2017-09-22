@@ -710,3 +710,4 @@ var plot = function () {
 if (typeof module !== "undefined") {
     module.exports = plot;
 }
+

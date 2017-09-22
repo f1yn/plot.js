@@ -15,7 +15,7 @@ Clone this repo (or include inside of your `package.json`), and install build de
 The project can then be built via `npm run build`. Updated versions should become avaliable in the `dist` directory. 
 
 ## Documentation
-Documentation can be built via `gulp docs` once all dependencies are installed. Once built, docs can be found within the
+Documentation can be built via `esdocs` once all dependencies are installed. Once built, docs can be found within the
 generated `docs` directory. Open the `docs/index.html` file in your browser to view the docs.
 
 **Better README documentation is yet to come!** 
